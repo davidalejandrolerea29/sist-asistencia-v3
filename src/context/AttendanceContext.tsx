@@ -15,7 +15,7 @@ interface AttendanceContextType {
     type?: AttendanceType,
     details?: string,
     exitTime?: string,
-    
+    date?: string
   ) => Promise<void>;
   getStudentsByCourse: (course: string, division: string) => Student[];
   deleteStudent: (id: string) => Promise<void>;
@@ -47,9 +47,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (studentsError) {
           throw studentsError;
         }
-    
-        console.log('Students:', studentsData);  // Verifica los estudiantes obtenidos
-    
+        
         const { data: attendanceData, error: attendanceError } = await supabase
           .from('attendance_records')
           .select('*');
@@ -57,9 +55,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (attendanceError) {
           throw attendanceError;
         }
-    
-        console.log('Attendance Records:', attendanceData);  // Verifica los registros de asistencia
-    
+        
         const studentsWithAttendance = studentsData.map(student => {
           const studentAttendance = attendanceData
             .filter(record => record.student_id === student.id)
@@ -72,7 +68,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               details: record.details,
               exit_time: record.exit_time
             }));
-    
+          
           return {
             id: student.id,
             name: student.name,
@@ -82,7 +78,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             attendanceRecords: studentAttendance
           };
         });
-    
+        
         setStudents(studentsWithAttendance);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -161,82 +157,114 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const markAttendance = async (
     studentId: string,
-  present: boolean,
-  type: AttendanceType = 'regular',
-  details?: string,
-  exitTime?: string,
-  date?: string // Nueva propiedad opcional para la fecha
-) => {
-  try {
-    const today = date || new Date().toISOString().split('T')[0];  // Usar la fecha pasada o la fecha actual
-    console.log('Fecha a guardar:', today);  // Depuración para asegurarse de que la fecha es la correcta
-
-    const time = new Date().toLocaleTimeString();
-
-    const absenceType = attendanceTypes.find(t => t.id === type);
-    const absenceValue = absenceType?.value || 1.0;
-
-    const { data: existingRecords, error: fetchError } = await supabase
-      .from('attendance_records')
-      .select('*')
-      .eq('student_id', studentId)
-      .eq('date', today);
-
-    if (fetchError) {
-      throw fetchError;
-    }
-
-    if (existingRecords && existingRecords.length > 0) {
-      const { error: updateError } = await supabase
+    present: boolean,
+    type: AttendanceType = 'regular',
+    details?: string,
+    exitTime?: string,
+    date: string = new Date().toISOString().split('T')[0] // Esto debe ser un string con formato 'YYYY-MM-DD'
+  ) => {
+    try {
+      const time = new Date().toLocaleTimeString();
+      
+      const absenceType = attendanceTypes.find(t => t.id === type);
+      const absenceValue = absenceType?.value || 1.0;
+      
+      // Verificamos si ya existe un registro de asistencia para este estudiante y fecha
+      const { data: existingRecords, error: fetchError } = await supabase
         .from('attendance_records')
-        .update({
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('date', date);
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      // Si el registro ya existe, lo actualizamos
+      if (existingRecords && existingRecords.length > 0) {
+        const { error: updateError } = await supabase
+          .from('attendance_records')
+          .update({
+            present,
+            time,
+            type,
+            absence_value: absenceValue,
+            details,
+            exit_time: exitTime
+          })
+          .eq('id', existingRecords[0].id);
+        
+        if (updateError) {
+          throw updateError;
+        }
+      } else {
+        const { error: insertError } = await supabase
+        .from('attendance_records')
+        .insert({
+          id: uuidv4(),
+          student_id: studentId,
+          date: date,  // Asegúrate de que 'attendanceDate' sea la fecha que se pasa desde el frontend
           present,
           time,
           type,
           absence_value: absenceValue,
           details,
-          exit_time: exitTime
-        })
-        .eq('id', existingRecords[0].id); // Asegúrate de estar actualizando el registro correcto
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      console.log('Registro actualizado');
-    } else {
-      const { error: insertError } = await supabase
-        .from('attendance_records')
-        .insert([
-          {
-            student_id: studentId,
-            date: today,  // Guardar la fecha correcta
-            time,
-            present,
-            type,
-            absence_value: absenceValue,
-            details,
-            exit_time: exitTime
-          }
-        ]);
-
+          exit_time: exitTime,
+          created_at: new Date().toISOString()  // Fecha y hora de creación
+        });
+      
       if (insertError) {
         throw insertError;
       }
-
-      console.log('Nuevo registro creado');
     }
- 
+      
+      // Actualiza el estado local (si es necesario)
+      setStudents(prev => 
+        prev.map(student => {
+          if (student.id === studentId) {
+            const existingRecordIndex = student.attendanceRecords.findIndex(
+              record => record.date === date
+            );
+            
+            const newRecord = {
+              date,
+              present,
+              time,
+              type,
+              absence_value: absenceValue,
+              details,
+              exit_time: exitTime
+            };
+            
+            let updatedRecords: AttendanceRecord[] = [];
+            
+            if (existingRecordIndex >= 0) {
+              updatedRecords = [...student.attendanceRecords];
+              updatedRecords[existingRecordIndex] = newRecord;
+            } else {
+              updatedRecords = [...student.attendanceRecords, newRecord];
+            }
+            
+            return {
+              ...student,
+              attendanceRecords: updatedRecords
+            };
+          }
+          return student;
+        })
+      );
+   
+  
       
       setStudents(prev => 
         prev.map(student => {
           if (student.id === studentId) {
             const existingRecordIndex = student.attendanceRecords.findIndex(
-              record => record.date === today
+              record => record.date === date
             );
             
             const newRecord = {
-              date: today,
+              date,
               present,
               time,
               type,
@@ -264,20 +292,20 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     } catch (error) {
       console.error('Error marking attendance:', error);
-      const today = new Date().toISOString().split('T')[0];
+      
       const time = new Date().toLocaleTimeString();
       const absenceType = attendanceTypes.find(t => t.id === type);
       const absenceValue = absenceType?.value || 1.0;
-  
+      
       setStudents(prev => 
         prev.map(student => {
           if (student.id === studentId) {
             const existingRecordIndex = student.attendanceRecords.findIndex(
-              record => record.date === today
+              record => record.date === date
             );
             
             const newRecord = {
-              date: today,
+              date,
               present,
               time,
               type,
@@ -305,7 +333,6 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     }
   };
-  
 
   const getStudentsByCourse = (course: string, division: string): Student[] => {
     return students.filter(

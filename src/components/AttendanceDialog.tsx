@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AttendanceType, attendanceTypes } from '../types';
-import { Clock, X } from 'lucide-react';
+import { Calendar, Clock, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface AttendanceDialogProps {
   onSubmit: (data: {
@@ -8,32 +10,42 @@ interface AttendanceDialogProps {
     type: AttendanceType;
     details?: string;
     exitTime?: string;
-    date?: Date;
+    date: string;
+
   }) => void;
   onClose: () => void;
+  initialDate?: string;
 }
 
-const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose }) => {
+const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose, initialDate = "" }) => {
   const [type, setType] = useState<AttendanceType>('regular');
   const [details, setDetails] = useState('');
   const [exitTime, setExitTime] = useState('');
-  const [date, setDate] = useState<Date>(new Date()); 
+  const [date, setDate] = useState<string>(initialDate || new Date().toISOString().split('T')[0]);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate(e.target.value);
+  };
+
   const handleSubmit = (present: boolean) => {
+    console.log("Fecha de asistencia:", date);  // Verifica que 'attendanceDate' tenga el valor esperado
     onSubmit({
       present,
       type,
       details: details.trim() || undefined,
       exitTime: exitTime.trim() || undefined,
-      date
+      date,  // Este es el valor de la fecha que usas en el formulario
+     
     });
   };
+  
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Registrar Asistencia</h2>
-          
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full"
@@ -41,19 +53,26 @@ const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose }
             <X size={20} />
           </button>
         </div>
+
         <div className="mb-4">
-        
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-            Fecha de Asistencia
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Fecha
           </label>
-          <input
-            type="date"
-            id="date"
-            value={date.toISOString().split('T')[0]} // El valor de la fecha está vinculado a `date` en el estado
-            onChange={(e) => setDate(new Date(e.target.value))}  // Actualiza `date` cuando el usuario selecciona una fecha
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Calendar size={18} className="text-gray-400" />
+            </div>
+            <input
+          type="date"
+          id="attendanceDate"
+          value={date}
+          onChange={handleDateChange}
+          className="w-full border rounded p-2"
+        />
+
+          </div>
         </div>
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Tipo de Registro
