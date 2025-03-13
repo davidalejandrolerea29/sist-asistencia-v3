@@ -161,63 +161,58 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     type: AttendanceType = 'regular',
     details?: string,
     exitTime?: string,
-    date: string = new Date().toISOString().split('T')[0] // Esto debe ser un string con formato 'YYYY-MM-DD'
+    date: string = new Date().toISOString().split('T')[0] // YYYY-MM-DD
   ) => {
     try {
       const time = new Date().toLocaleTimeString();
-      
       const absenceType = attendanceTypes.find(t => t.id === type);
       const absenceValue = absenceType?.value || 1.0;
-      
-      // Verificamos si ya existe un registro de asistencia para este estudiante y fecha
-      const { data: existingRecords, error: fetchError } = await supabase
-        .from('attendance_records')
-        .select('*')
-        .eq('student_id', studentId)
-        .eq('date', date);
-      
-      if (fetchError) {
-        throw fetchError;
-      }
-      
-      // Si el registro ya existe, lo actualizamos
-      if (existingRecords && existingRecords.length > 0) {
-        const { error: updateError } = await supabase
-          .from('attendance_records')
-          .update({
-            present,
-            time,
-            type,
-            absence_value: absenceValue,
-            details,
-            exit_time: exitTime
-          })
-          .eq('id', existingRecords[0].id);
-        
-        if (updateError) {
-          throw updateError;
-        }
-      } else {
-        const { error: insertError } = await supabase
+  
+      const { error } = await supabase
         .from('attendance_records')
         .insert({
           id: uuidv4(),
           student_id: studentId,
-          date: date,  // Asegúrate de que 'attendanceDate' sea la fecha que se pasa desde el frontend
-          present,
+          date,
           time,
+          present,
           type,
           absence_value: absenceValue,
           details,
           exit_time: exitTime,
-          created_at: new Date().toISOString()  // Fecha y hora de creación
+          created_at: new Date().toISOString()
         });
-      
-      if (insertError) {
-        throw insertError;
+  
+      if (error) {
+        throw error;
       }
-    }
-      
+  
+      // Agregar el nuevo registro al estado local
+      setStudents(prev => 
+        prev.map(student => {
+          if (student.id === studentId) {
+            return {
+              ...student,
+              attendanceRecords: [
+                ...student.attendanceRecords,
+                {
+                  date,
+                  time,
+                  present,
+                  type,
+                  absence_value: absenceValue,
+                  details,
+                  exit_time: exitTime
+                }
+              ]
+            };
+          }
+          return student;
+        })
+      );
+  
+    
+
       // Actualiza el estado local (si es necesario)
       setStudents(prev => 
         prev.map(student => {
