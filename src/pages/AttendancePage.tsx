@@ -22,7 +22,9 @@ const AttendancePage: React.FC = () => {
     new Date().toISOString().split('T')[0]
   );
   
-  const students = getStudentsByCourse(selectedYear, selectedDivision);
+  const students = getStudentsByCourse(selectedYear.toString(), selectedDivision);
+  
+  
   
   if (loading) {
     return (

@@ -14,7 +14,8 @@ interface AttendanceContextType {
     present: boolean,
     type?: AttendanceType,
     details?: string,
-    exitTime?: string
+    exitTime?: string,
+    
   ) => Promise<void>;
   getStudentsByCourse: (course: string, division: string) => Student[];
   deleteStudent: (id: string) => Promise<void>;
@@ -160,64 +161,72 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const markAttendance = async (
     studentId: string,
-    present: boolean,
-    type: AttendanceType = 'regular',
-    details?: string,
-    exitTime?: string
-  ) => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const time = new Date().toLocaleTimeString();
-      
-      const absenceType = attendanceTypes.find(t => t.id === type);
-      const absenceValue = absenceType?.value || 1.0;
-      
-      const { data: existingRecords, error: fetchError } = await supabase
+  present: boolean,
+  type: AttendanceType = 'regular',
+  details?: string,
+  exitTime?: string,
+  date?: string // Nueva propiedad opcional para la fecha
+) => {
+  try {
+    const today = date || new Date().toISOString().split('T')[0];  // Usar la fecha pasada o la fecha actual
+    console.log('Fecha a guardar:', today);  // Depuración para asegurarse de que la fecha es la correcta
+
+    const time = new Date().toLocaleTimeString();
+
+    const absenceType = attendanceTypes.find(t => t.id === type);
+    const absenceValue = absenceType?.value || 1.0;
+
+    const { data: existingRecords, error: fetchError } = await supabase
+      .from('attendance_records')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('date', today);
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    if (existingRecords && existingRecords.length > 0) {
+      const { error: updateError } = await supabase
         .from('attendance_records')
-        .select('*')
-        .eq('student_id', studentId)
-        .eq('date', today);
-      
-      if (fetchError) {
-        throw fetchError;
+        .update({
+          present,
+          time,
+          type,
+          absence_value: absenceValue,
+          details,
+          exit_time: exitTime
+        })
+        .eq('id', existingRecords[0].id); // Asegúrate de estar actualizando el registro correcto
+
+      if (updateError) {
+        throw updateError;
       }
-      
-      if (existingRecords && existingRecords.length > 0) {
-        const { error: updateError } = await supabase
-          .from('attendance_records')
-          .update({
-            present,
+
+      console.log('Registro actualizado');
+    } else {
+      const { error: insertError } = await supabase
+        .from('attendance_records')
+        .insert([
+          {
+            student_id: studentId,
+            date: today,  // Guardar la fecha correcta
             time,
+            present,
             type,
             absence_value: absenceValue,
             details,
             exit_time: exitTime
-          })
-          .eq('id', existingRecords[0].id);
-        
-        if (updateError) {
-          throw updateError;
-        }
-      } else {
-        const { error: insertError } = await supabase
-          .from('attendance_records')
-          .insert({
-            id: uuidv4(),
-            student_id: studentId,
-            date: today,
-            present,
-            time,
-            type,
-            absence_value: absenceValue,
-            details,
-            exit_time: exitTime,
-            created_at: new Date().toISOString()
-          });
-        
-        if (insertError) {
-          throw insertError;
-        }
+          }
+        ]);
+
+      if (insertError) {
+        throw insertError;
       }
+
+      console.log('Nuevo registro creado');
+    }
+ 
       
       setStudents(prev => 
         prev.map(student => {
@@ -255,12 +264,11 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     } catch (error) {
       console.error('Error marking attendance:', error);
-      
       const today = new Date().toISOString().split('T')[0];
       const time = new Date().toLocaleTimeString();
       const absenceType = attendanceTypes.find(t => t.id === type);
       const absenceValue = absenceType?.value || 1.0;
-      
+  
       setStudents(prev => 
         prev.map(student => {
           if (student.id === studentId) {
@@ -297,6 +305,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     }
   };
+  
 
   const getStudentsByCourse = (course: string, division: string): Student[] => {
     return students.filter(

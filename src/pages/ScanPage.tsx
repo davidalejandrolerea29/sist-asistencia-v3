@@ -134,7 +134,8 @@ const ScanPage: React.FC = () => {
         data.present,
         data.type,
         data.details,
-        data.exitTime
+        data.exitTime,
+        
       );
       setAttendanceMarked(data.present);
       setShowAttendanceDialog(false);

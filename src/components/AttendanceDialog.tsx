@@ -8,6 +8,7 @@ interface AttendanceDialogProps {
     type: AttendanceType;
     details?: string;
     exitTime?: string;
+    date?: Date;
   }) => void;
   onClose: () => void;
 }
@@ -16,13 +17,14 @@ const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose }
   const [type, setType] = useState<AttendanceType>('regular');
   const [details, setDetails] = useState('');
   const [exitTime, setExitTime] = useState('');
-
+  const [date, setDate] = useState<Date>(new Date()); 
   const handleSubmit = (present: boolean) => {
     onSubmit({
       present,
       type,
       details: details.trim() || undefined,
-      exitTime: exitTime.trim() || undefined
+      exitTime: exitTime.trim() || undefined,
+      date
     });
   };
 
@@ -31,6 +33,7 @@ const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose }
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Registrar Asistencia</h2>
+          
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full"
@@ -38,7 +41,19 @@ const AttendanceDialog: React.FC<AttendanceDialogProps> = ({ onSubmit, onClose }
             <X size={20} />
           </button>
         </div>
-
+        <div className="mb-4">
+        
+          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            Fecha de Asistencia
+          </label>
+          <input
+            type="date"
+            id="date"
+            value={date.toISOString().split('T')[0]} // El valor de la fecha está vinculado a `date` en el estado
+            onChange={(e) => setDate(new Date(e.target.value))}  // Actualiza `date` cuando el usuario selecciona una fecha
+            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          />
+        </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Tipo de Registro
