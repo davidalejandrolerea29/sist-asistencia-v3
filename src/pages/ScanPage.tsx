@@ -42,7 +42,8 @@ const ScanPage: React.FC = () => {
       }
     };
   }, []);
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState<string>(''); // Inicializa como un string vacío o con una fecha predeterminada
+
 
 
   const startScanner = () => {
@@ -127,18 +128,23 @@ const ScanPage: React.FC = () => {
   const handleMarkAttendance = async (data: {
     present: boolean;
     type: string;
+    date: string; // El campo `date` en `data` que se pasa a la función
     details?: string;
     exitTime?: string;
   }) => {
     if (scannedStudent) {
+      console.log('Escaneado:', scannedStudent);  // Verifica que `scannedStudent` no sea null
+      console.log('Fecha:', date);  // Verifica el valor de `date` antes de pasarlo
+  
       await markAttendance(
         scannedStudent.id,
         data.present,
         data.type,
         data.details,
         data.exitTime,
-        date // Usamos `date` directamente aquí
+        data.date // Aquí debes usar `data.date` si lo pasas correctamente desde el formulario
       );
+  
       setAttendanceMarked(data.present);
       setShowAttendanceDialog(false);
   
@@ -149,6 +155,8 @@ const ScanPage: React.FC = () => {
         setStudentDNI("");
         setDate(new Date().toISOString().split('T')[0]); // Resetear la fecha a la actual
       }, 3000);
+    } else {
+      console.log('No se escaneó ningún estudiante');
     }
   };
   

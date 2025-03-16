@@ -64,7 +64,7 @@ const StudentsPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+      {/* <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Gestión de Estudiantes</h1>
         <button
           onClick={() => setIsAddingStudent(true)}
@@ -96,77 +96,11 @@ const StudentsPage: React.FC = () => {
             className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-      </div>
-
-      {isAddingStudent && (
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Agregar Nuevo Estudiante</h2>
-          <form onSubmit={handleAddStudent} className="flex flex-col gap-4">
-            <div className="flex-1">
-              <label htmlFor="studentName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nombre del Estudiante
-              </label>
-              <input
-                type="text"
-                id="studentName"
-                value={newStudentName}
-                onChange={(e) => setNewStudentName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Nombre completo"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor="studentDNI" className="block text-sm font-medium text-gray-700 mb-1">
-                DNI del Estudiante
-              </label>
-              <input
-                type="text"
-                id="studentDNI"
-                value={newStudentDNI}
-                onChange={(e) => setNewStudentDNI(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="DNI"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsAddingStudent(false);
-                  setNewStudentName("");
-                  setNewStudentDNI("");
-                }}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                disabled={isSubmitting}
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader size={18} className="animate-spin mr-2" />
-                    Guardando...
-                  </>
-                ) : (
-                  'Guardar'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      </div> */}
 
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold mb-4">
-          Estudiantes de {selectedYear}° "{selectedDivision}"
+         Gestión de Estudiantes
           {searchQuery && (
             <span className="text-sm font-normal text-gray-500 ml-2">
               (Filtrando por: {searchQuery})
