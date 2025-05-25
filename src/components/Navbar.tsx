@@ -10,17 +10,18 @@ const Navbar: React.FC = () => {
   };
   
   return (
-    <nav className="bg-green-900 text-white shadow-md">
+
+    <nav className="bg-sky-400 text-white shadow-md">
+
+
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <img 
-                src="https://fotoporfolio.s3.us-east-1.amazonaws.com/IPGSMPNG.png" 
-                alt="IPGSM Logo" 
-                className="h-8 w-8 rounded"
-              />
-              <span className="font-bold text-xl">Sistema de Asistencias IPGSM</span>
+
+              <QrCode size={24} />
+              <span className="font-bold text-xl">Asistencia para el 25 de mayo</span>
+
             </Link>
           </div>
           

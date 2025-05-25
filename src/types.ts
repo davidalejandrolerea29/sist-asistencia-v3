@@ -20,6 +20,7 @@ export interface AttendanceRecord {
 export type AttendanceType = 
   | 'regular'
   | 'physical_education'
+  | 'schoolact'
   | 'late_arrival'
   | 'early_exit'
   | 'sports_activity'
@@ -35,8 +36,11 @@ export const attendanceTypes = [
   { id: 'early_exit', label: 'Salida Anticipada', value: 0 },
   { id: 'sports_activity', label: 'Actividad Deportiva', value: 0 },
   { id: 'academic_activity', label: 'Actividad Académica', value: 0 },
-  { id: 'medical', label: 'Médica', value: 1.0 },
-  { id: 'justified', label: 'Justificada', value: 1.0 },
+
+  { id: 'medical', label: 'Médica', value: 0 },
+  { id: 'schoolact', label: 'Acto Escolar', value: 2 },
+  { id: 'justified', label: 'Justificada', value: 0 },
+
   { id: 'unjustified', label: 'Injustificada', value: 1.0 }
 ];
 

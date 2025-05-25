@@ -189,6 +189,7 @@ const ScanPage: React.FC = () => {
         </div>
       ) : (
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+
           {/*
           <button
             onClick={startScanner}
@@ -197,10 +198,11 @@ const ScanPage: React.FC = () => {
             <Camera size={20} className="mr-2" />
             Escanear Código QR
           </button>
+
           
           <div className="relative my-4 flex items-center">
             <div className="flex-grow border-t border-gray-300"></div>
-            <span className="flex-shrink mx-4 text-gray-600">o</span>
+          
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
           */}
