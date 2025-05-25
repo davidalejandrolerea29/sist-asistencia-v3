@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
 
-              <QrCode size={24} />
+             
               <span className="font-bold text-xl">Asistencia para el 25 de mayo</span>
 
             </Link>
