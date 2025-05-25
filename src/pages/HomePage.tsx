@@ -25,13 +25,14 @@ const HomePage: React.FC = () => {
            Equivale a 2 (dos) faltas.
 
           </p>
-          <Link
-            to="/scan"
-            className="mt-auto bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
+         <Link
+  to="/scan"
+  className="mt-auto bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
+>
+  Tomar la asistencia
+</Link>
 
-            Tomar la asistencia
 
-          </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
