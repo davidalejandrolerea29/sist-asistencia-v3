@@ -10,13 +10,14 @@ const Navbar: React.FC = () => {
   };
   
   return (
-    <nav className="bg-indigo-600 text-white shadow-md">
+    <nav className="bg-sky-400 text-white shadow-md">
+
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <QrCode size={24} />
-              <span className="font-bold text-xl">AsistenciaQR</span>
+              <span className="font-bold text-xl">Asistencia para el 25 de mayo</span>
             </Link>
           </div>
           

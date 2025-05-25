@@ -19,15 +19,15 @@ const HomePage: React.FC = () => {
           <div className="bg-blue-100 p-3 rounded-full mb-4">
             <QrCode size={32} className="text-blue-600" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Escaneo de QR</h2>
+          <h2 className="text-xl font-semibold mb-2">Asistencia</h2>
           <p className="text-gray-600 mb-4">
-            Registra asistencias rápidamente escaneando los códigos QR de los estudiantes.
+           Equivale a 2 (dos) faltas.
           </p>
           <Link
             to="/scan"
             className="mt-auto bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
           >
-            Escanear QR
+            Tomar la asistencia
           </Link>
         </div>
 
