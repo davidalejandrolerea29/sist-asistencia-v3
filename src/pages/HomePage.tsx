@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { QrCode, Users, ClipboardCheck } from 'lucide-react';
+import { School, Users, ClipboardCheck } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   return (
@@ -17,17 +17,20 @@ const HomePage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
           <div className="bg-blue-100 p-3 rounded-full mb-4">
-            <QrCode size={32} className="text-blue-600" />
+            <School size={32} className="text-blue-600" />
           </div>
+
           <h2 className="text-xl font-semibold mb-2">Asistencia</h2>
           <p className="text-gray-600 mb-4">
            Equivale a 2 (dos) faltas.
+
           </p>
           <Link
             to="/scan"
             className="mt-auto bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
-          >
+
             Tomar la asistencia
+
           </Link>
         </div>
 

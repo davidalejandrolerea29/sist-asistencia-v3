@@ -33,12 +33,14 @@ export const attendanceTypes = [
   { id: 'regular', label: 'Regular', value: 1.0 },
   { id: 'physical_education', label: 'Educación Física', value: 0.5 },
   { id: 'late_arrival', label: 'Llegada Tarde', value: 0.25 },
-  { id: 'early_exit', label: 'Salida Anticipada', value: 1.0 },
+  { id: 'early_exit', label: 'Salida Anticipada', value: 0 },
   { id: 'sports_activity', label: 'Actividad Deportiva', value: 0 },
   { id: 'academic_activity', label: 'Actividad Académica', value: 0 },
+
   { id: 'medical', label: 'Médica', value: 0 },
   { id: 'schoolact', label: 'Acto Escolar', value: 2 },
   { id: 'justified', label: 'Justificada', value: 0 },
+
   { id: 'unjustified', label: 'Injustificada', value: 1.0 }
 ];
 

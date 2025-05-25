@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAttendance } from '../context/AttendanceContext';
-import { QrCode, CheckCircle, XCircle, User, Camera, Search } from 'lucide-react';
+import { School, CheckCircle, XCircle, User, Camera, Search } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import AttendanceDialog from '../components/AttendanceDialog';
 
@@ -42,7 +42,10 @@ const ScanPage: React.FC = () => {
       }
     };
   }, []);
-  
+  const [date, setDate] = useState<string>(''); // Inicializa como un string vacío o con una fecha predeterminada
+
+
+
   const startScanner = () => {
     setShowScanner(true);
     setError(null);
@@ -125,39 +128,50 @@ const ScanPage: React.FC = () => {
   const handleMarkAttendance = async (data: {
     present: boolean;
     type: string;
+    date: string; // El campo `date` en `data` que se pasa a la función
     details?: string;
     exitTime?: string;
   }) => {
     if (scannedStudent) {
+      console.log('Escaneado:', scannedStudent);  // Verifica que `scannedStudent` no sea null
+      console.log('Fecha:', date);  // Verifica el valor de `date` antes de pasarlo
+  
       await markAttendance(
         scannedStudent.id,
         data.present,
         data.type,
         data.details,
         data.exitTime,
-        
+        data.date // Aquí debes usar `data.date` si lo pasas correctamente desde el formulario
       );
+  
       setAttendanceMarked(data.present);
       setShowAttendanceDialog(false);
-      
-      // Reset after 3 seconds
+  
+      // Reset después de 3 segundos
       setTimeout(() => {
         setScannedStudent(null);
         setAttendanceMarked(null);
         setStudentDNI("");
+        setDate(new Date().toISOString().split('T')[0]); // Resetear la fecha a la actual
       }, 3000);
+    } else {
+      console.log('No se escaneó ningún estudiante');
     }
   };
+  
+  
+  
   
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center p-4 bg-indigo-100 rounded-full mb-4">
-          <QrCode size={40} className="text-indigo-600" />
+          <School size={40} className="text-green-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Escaneo de Asistencia</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Tomar Asistencia</h1>
         <p className="text-gray-600 max-w-lg mx-auto">
-          Escanea el código QR del estudiante o búscalo por nombre o DNI para registrar su asistencia.
+       Busca por nombre o DNI para registrar su asistencia del estudiante.
         </p>
       </div>
       
@@ -175,14 +189,23 @@ const ScanPage: React.FC = () => {
         </div>
       ) : (
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
-         
+
+          {/*
+          <button
+            onClick={startScanner}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-md transition-colors mb-4 flex items-center justify-center"
+          >
+            <Camera size={20} className="mr-2" />
+            Escanear Código QR
+          </button>
+
           
           <div className="relative my-4 flex items-center">
             <div className="flex-grow border-t border-gray-300"></div>
           
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
-          
+          */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Buscar Estudiante
@@ -253,6 +276,7 @@ const ScanPage: React.FC = () => {
       )}
       
       {scannedStudent && !attendanceMarked && !showAttendanceDialog && (
+        
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
           <div className="flex items-center mb-4">
             <div className="bg-indigo-100 p-3 rounded-full">
@@ -273,6 +297,7 @@ const ScanPage: React.FC = () => {
           
           <button
             onClick={() => setShowAttendanceDialog(true)}
+            
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md"
           >
             Registrar Asistencia
@@ -284,6 +309,7 @@ const ScanPage: React.FC = () => {
         <AttendanceDialog
           onSubmit={handleMarkAttendance}
           onClose={() => setShowAttendanceDialog(false)}
+          initialDate={date} // Pasa la fecha actual aquí
         />
       )}
       

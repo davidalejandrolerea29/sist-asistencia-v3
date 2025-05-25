@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Users, QrCode, Home, List } from 'lucide-react';
+import { Users, ClipboardCheck, Home, List } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -10,14 +10,18 @@ const Navbar: React.FC = () => {
   };
   
   return (
+
     <nav className="bg-sky-400 text-white shadow-md">
+
 
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
+
               <QrCode size={24} />
               <span className="font-bold text-xl">Asistencia para el 25 de mayo</span>
+
             </Link>
           </div>
           
@@ -26,8 +30,8 @@ const Navbar: React.FC = () => {
               to="/"
               className={`px-3 py-2 rounded-md text-sm font-medium ${
                 isActive('/') 
-                  ? 'bg-indigo-700 text-white' 
-                  : 'text-indigo-100 hover:bg-indigo-500'
+                  ? 'bg-blue-800 text-white' 
+                  : 'text-blue-100 hover:bg-blue-800'
               }`}
             >
               <div className="flex items-center space-x-1">
@@ -40,8 +44,8 @@ const Navbar: React.FC = () => {
               to="/students"
               className={`px-3 py-2 rounded-md text-sm font-medium ${
                 isActive('/students') 
-                  ? 'bg-indigo-700 text-white' 
-                  : 'text-indigo-100 hover:bg-indigo-500'
+                  ? 'bg-blue-800 text-white' 
+                  : 'text-blue-100 hover:bg-blue-800'
               }`}
             >
               <div className="flex items-center space-x-1">
@@ -54,8 +58,8 @@ const Navbar: React.FC = () => {
               to="/attendance"
               className={`px-3 py-2 rounded-md text-sm font-medium ${
                 isActive('/attendance') 
-                  ? 'bg-indigo-700 text-white' 
-                  : 'text-indigo-100 hover:bg-indigo-500'
+                  ? 'bg-blue-800 text-white' 
+                  : 'text-blue-100 hover:bg-blue-800'
               }`}
             >
               <div className="flex items-center space-x-1">
@@ -73,7 +77,7 @@ const Navbar: React.FC = () => {
           <Link
             to="/"
             className={`flex flex-col items-center py-2 ${
-              isActive('/') ? 'text-indigo-600' : 'text-gray-500'
+              isActive('/') ? 'text-blue-900' : 'text-gray-500'
             }`}
           >
             <Home size={20} />
@@ -83,7 +87,7 @@ const Navbar: React.FC = () => {
           <Link
             to="/students"
             className={`flex flex-col items-center py-2 ${
-              isActive('/students') ? 'text-indigo-600' : 'text-gray-500'
+              isActive('/students') ? 'text-blue-900' : 'text-gray-500'
             }`}
           >
             <Users size={20} />
@@ -93,7 +97,7 @@ const Navbar: React.FC = () => {
           <Link
             to="/attendance"
             className={`flex flex-col items-center py-2 ${
-              isActive('/attendance') ? 'text-indigo-600' : 'text-gray-500'
+              isActive('/attendance') ? 'text-blue-900' : 'text-gray-500'
             }`}
           >
             <List size={20} />
